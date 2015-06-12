@@ -1,81 +1,59 @@
 package hackathon_test.app;
 
 import android.app.Activity;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import hackathon_test.app.db.HackathonTestDbHelper;
-import hackathon_test.app.db.Record;
-import hackathon_test.app.db.RecordDao;
-
-import java.util.Iterator;
-
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
 
 public class MainActivity extends Activity {
 
-    private RecordDao recordDao;
+    private CallbackManager callbackManager;
+
+    private AccessTokenTracker accessTokenTracker;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
-        recordDao = new RecordDao(new HackathonTestDbHelper(getApplicationContext()));
+        callbackManager = CallbackManager.Factory.create();
 
-        updateRecords();
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                Log.v("MainActivity", "access token changed oldAccessToken=" + oldAccessToken + ", currentAccessToken=" + currentAccessToken);
+
+                if (currentAccessToken == null) {
+                    final Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    final Intent intent = new Intent(getApplicationContext(), RecordsActivity.class);
+                    startActivity(intent);
+                }
+            }
+        };
     }
-
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v("MainActivity", "Activity result. requestCode=" + requestCode + ", resultCode="
+                + resultCode + ", data=" + data);
+
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onDestroy() {
+        Log.v("MainActivity", "Destroy access token");
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
     }
 
-    public void addRecord(final View view) {
-        Log.v("MainActivity", "Adding new record");
-
-        final EditText input = (EditText) findViewById(R.id.recordTitle);
-        recordDao.insert(input.getText().toString());
-        updateRecords();
-    }
-
-    public void updateRecords() {
-        Log.v("MainActivity", "Updating records");
-
-        final TableLayout tableLayout = (TableLayout) findViewById(R.id.records);
-        tableLayout.removeAllViews();
-
-        for (final Record record : recordDao.getAll()) {
-            final TextView textView = new TextView(this);
-            final TableRow tableRow = new TableRow(this);
-
-            textView.setText(record.getTitle());
-            tableRow.addView(textView);
-            tableLayout.addView(tableRow);
-        }
-    }
 }

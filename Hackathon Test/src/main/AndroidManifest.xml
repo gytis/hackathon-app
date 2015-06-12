@@ -9,15 +9,22 @@
             android:theme="@style/AppTheme">
 
         <meta-data android:name="DATABASE" android:value="hackathon_test.db"/>
-        <activity
-                android:name=".MainActivity"
-                android:label="@string/app_name">
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <activity android:name=".MainActivity"
+                  android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".RecordsActivity"
+                  android:label="Records">
+        </activity>
+        <activity android:name="com.facebook.FacebookActivity"
+                  android:configChanges=
+                          "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:label="@string/app_name"/>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

@@ -2,21 +2,35 @@ package hackathon.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import hackathon.app.dao.FacebookDao;
+import hackathon.app.dao.User;
+import hackathon.app.dao.UserDao;
+import org.json.JSONObject;
+
+import java.util.List;
 
 public class MainActivity extends Activity {
 
     private CallbackManager callbackManager;
 
+    private Intent mainActivityIntent;
+
     private Intent eventsActivityIntent;
+
+    private TokenTracker tokenTracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,15 +39,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         eventsActivityIntent = new Intent(this, EventsActivity.class);
-
-        if (AccessToken.getCurrentAccessToken() != null) {
-            Log.v(this.getClass().getName(), "Facebook token exists. Redirecting");
-            startActivity(eventsActivityIntent);
-        } else {
-            Log.v(this.getClass().getName(), "Facebook token does not exist. Need to log in");
-        }
-
+        mainActivityIntent = new Intent(this, MainActivity.class);
         callbackManager = CallbackManager.Factory.create();
+        tokenTracker = new TokenTracker();
 
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
@@ -41,28 +49,9 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onStart()
-    {
-        super.onStart();
-        if (AccessToken.getCurrentAccessToken() != null) {
-            Log.v(this.getClass().getName(), "Facebook token exists. Redirecting");
-            startActivity(eventsActivityIntent);
-        } else {
-            Log.v(this.getClass().getName(), "Facebook token does not exist. Need to log in");
-        }
-    }
-
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        if (AccessToken.getCurrentAccessToken() != null) {
-            Log.v(this.getClass().getName(), "Facebook token exists. Redirecting");
-            startActivity(eventsActivityIntent);
-        } else {
-            Log.v(this.getClass().getName(), "Facebook token does not exist. Need to log in");
-        }
+    public void onDestroy() {
+        super.onDestroy();
+        tokenTracker.stopTracking();
     }
 
     @Override
@@ -76,6 +65,29 @@ public class MainActivity extends Activity {
         @Override
         public void onSuccess(LoginResult loginResult) {
             Log.v("Facebook Login", "success");
+
+            new FacebookDao().getUserInfo(new GraphRequest.GraphJSONObjectCallback() {
+                @Override
+                public void onCompleted(final JSONObject jsonObject, final GraphResponse graphResponse) {
+                    new AsyncTask<Void, Void, List<User>>() {
+                        @Override
+                        protected List<User> doInBackground(Void... voids) {
+                            return new UserDao().getUsers();
+                        }
+
+                        @Override
+                        protected void onPostExecute(List<User> users) {
+                            super.onPostExecute(users);
+                            Log.v("MainActivity", jsonObject.toString());
+//                            for (final User : users) {
+//                                if ()
+//                            }
+                        }
+                    }.execute();
+                }
+            });
+
+
             startActivity(eventsActivityIntent);
 
             // TODO check if registered
@@ -92,6 +104,19 @@ public class MainActivity extends Activity {
         @Override
         public void onError(FacebookException exception) {
             Log.v("Facebook Login", exception.getMessage());
+        }
+    }
+
+    private class TokenTracker extends AccessTokenTracker {
+        @Override
+        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+            if (currentAccessToken == null) {
+                Log.v("MainActivity", "Access token set to null");
+                startActivity(mainActivityIntent);
+            } else {
+                Log.v("MainActivity", "Access token set to " + currentAccessToken);
+                startActivity(eventsActivityIntent);
+            }
         }
     }
 

@@ -4,16 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 
 public class MainActivity extends Activity {
 
     private CallbackManager callbackManager;
-
-    private AccessTokenTracker accessTokenTracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,38 +22,35 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         callbackManager = CallbackManager.Factory.create();
+        final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("user_friends");
 
-        accessTokenTracker = new AccessTokenTracker() {
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                Log.v("MainActivity", "access token changed oldAccessToken=" + oldAccessToken + ", currentAccessToken=" + currentAccessToken);
-
-                if (currentAccessToken == null) {
-                    final Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                } else {
-                    final Intent intent = new Intent(getApplicationContext(), RecordsActivity.class);
-                    startActivity(intent);
-                }
+            public void onSuccess(LoginResult loginResult) {
+                Log.v("Facebook Login", "success");
+                // TODO check if registered
+                // TODO register
+                // TODO upload friends
+                // TODO redirect
             }
-        };
+
+            @Override
+            public void onCancel() {
+                Log.v("Facebook Login", "cancel");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Log.v("Facebook Login", exception.getMessage());
+            }
+        });
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v("MainActivity", "Activity result. requestCode=" + requestCode + ", resultCode="
-                + resultCode + ", data=" + data);
-
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.v("MainActivity", "Destroy access token");
-
-        super.onDestroy();
-        accessTokenTracker.stopTracking();
     }
 
 }

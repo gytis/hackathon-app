@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_alignParentTop="true" android:layout_alignParentStart="true"/>
+            android:layout_alignParentTop="true"/>
     <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
@@ -21,14 +21,13 @@
             android:text="Add Record"
             android:onClick="addRecord"
             android:id="@+id/addRecord"
-            android:layout_alignBottom="@+id/recordTitle" android:layout_toEndOf="@+id/recordTitle"/>
+            android:layout_alignBottom="@+id/recordTitle"/>
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/recordTitle"
             android:inputType="text"
-            android:width="200dp" android:hint="Enter new record title" android:layout_below="@+id/login_button"
-            android:layout_alignParentStart="true"/>
+            android:width="200dp" android:hint="Enter new record title" android:layout_below="@+id/login_button"/>
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -38,7 +37,7 @@
                 android:layout_height="fill_parent"
                 android:orientation="vertical"
                 android:isScrollContainer="true"
-                android:id="@+id/records" android:layout_alignTop="@+id/scrollView" android:layout_alignParentEnd="true">
+                android:id="@+id/records">
         </TableLayout>
     </ScrollView>
 </RelativeLayout>

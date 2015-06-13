@@ -1,5 +1,6 @@
 package hackathon.app.dao;
 
+import android.os.AsyncTask;
 import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -85,7 +86,6 @@ public final class EventDao {
             }
         }
         return eventList;
-
     }
 
 }

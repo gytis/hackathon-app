@@ -39,6 +39,12 @@ public class EventsActivity extends ListActivity {
                 final ArrayList<String> eventNames = new ArrayList<String>();
                 for (Event event: result) {
                     eventNames.add(event.getName());
+                    // Limit hack
+                    int count = 0;
+                    if (count > 50) {
+                        break;
+                    }
+                    count++;
                 }
                 eventListAdapter.addDataToList(eventNames);
             }

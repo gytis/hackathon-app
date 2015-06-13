@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -25,10 +26,14 @@ public class MainActivity extends Activity {
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
 
+        final Intent eventsActivityIntent = new Intent(this, EventsActivity.class);
+
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.v("Facebook Login", "success");
+                startActivity(eventsActivityIntent);
+
                 // TODO check if registered
                 // TODO register
                 // TODO upload friends
@@ -45,6 +50,10 @@ public class MainActivity extends Activity {
                 Log.v("Facebook Login", exception.getMessage());
             }
         });
+
+        if (AccessToken.getCurrentAccessToken() != null) {
+            startActivity(eventsActivityIntent);
+        }
     }
 
     @Override

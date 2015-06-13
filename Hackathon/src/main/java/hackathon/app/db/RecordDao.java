@@ -35,7 +35,7 @@ public class RecordDao {
         };
         final String sortOrder = HackathonTestContract.RecordEntity._ID + " DESC";
         final Cursor cursor = db.query(HackathonTestContract.RecordEntity.TABLE_NAME, projection, null, null, null, null, sortOrder);
-        final List<Record> records = new ArrayList<>();
+        final List<Record> records = new ArrayList<Record>();
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

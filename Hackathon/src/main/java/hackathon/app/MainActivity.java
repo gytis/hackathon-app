@@ -18,6 +18,7 @@ import com.facebook.login.widget.LoginButton;
 import hackathon.app.dao.FacebookDao;
 import hackathon.app.dao.User;
 import hackathon.app.dao.UserDao;
+import hackathon.app.event.EventsActivity;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity {
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookLoginCallback());
+        startActivity(eventsActivityIntent);
     }
 
     @Override

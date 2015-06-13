@@ -87,5 +87,4 @@ public final class EventDao {
         }
         return eventList;
     }
-
 }

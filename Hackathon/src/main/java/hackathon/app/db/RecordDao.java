@@ -1,4 +1,4 @@
-package hackathon_test.app.db;
+package hackathon.app.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;

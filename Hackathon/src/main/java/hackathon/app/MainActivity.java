@@ -1,4 +1,4 @@
-package hackathon_test.app;
+package hackathon.app;
 
 import android.app.Activity;
 import android.content.Intent;

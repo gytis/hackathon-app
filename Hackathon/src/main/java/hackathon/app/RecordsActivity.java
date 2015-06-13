@@ -1,4 +1,4 @@
-package hackathon_test.app;
+package hackathon.app;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,9 +10,10 @@ import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import hackathon_test.app.db.HackathonTestDbHelper;
-import hackathon_test.app.db.Record;
-import hackathon_test.app.db.RecordDao;
+import hackathon.app.R;
+import hackathon.app.db.HackathonTestDbHelper;
+import hackathon.app.db.Record;
+import hackathon.app.db.RecordDao;
 
 public class RecordsActivity extends Activity {
 

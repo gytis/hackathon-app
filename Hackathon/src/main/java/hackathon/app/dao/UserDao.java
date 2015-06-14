@@ -3,6 +3,7 @@ package hackathon.app.dao;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.facebook.AccessToken;
 import hackathon.app.CurrentUserHolder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -119,15 +120,58 @@ public final class UserDao {
 
                     httpPost.setEntity(stringEntity);
                     final HttpResponse httpResponse = httpClient.execute(httpPost);
-                    final JSONObject responseObject = new JSONObject(httpResponse.getEntity().toString());
+                    final String response = EntityUtils.toString(httpResponse.getEntity());
+                    final JSONObject responseObject = new JSONObject(response);
                     new CurrentUserHolder(context).setCurrentUserId(responseObject.getLong("id"));
+                    final JSONArray facebookFriends = getFacebookFriends();
+                    saveFriends(responseObject.getLong("id"), facebookFriends);
                 } catch (Exception e) {
-                    Log.v("UserDao", e.getMessage());
+                    Log.v("UserDao", "Failed to save new user");
                 }
 
                 return null;
             }
         }.execute();
+
+    }
+
+    private JSONArray getFacebookFriends() {
+        final HttpClient httpClient = new DefaultHttpClient();
+        final HttpGet httpGet = new HttpGet("https://graph.facebook.com/me/friends?access_token=" + AccessToken.getCurrentAccessToken().getToken());
+        httpGet.setHeader("Accept", "application/json");
+
+        final JSONObject jsonObject;
+
+        try {
+            final HttpResponse httpResponse = httpClient.execute(httpGet);
+            final HttpEntity entity = httpResponse.getEntity();
+            final String result = EntityUtils.toString(entity);
+            jsonObject = new JSONObject(result);
+        } catch (Exception e) {
+            Log.e("UserDao", "Failed to get facebook friends");
+            return new JSONArray();
+        }
+
+        try {
+            return jsonObject.getJSONArray("data");
+        } catch (JSONException e) {
+            Log.e("UserDao", "Failed to get facebook friends");
+            return new JSONArray();
+        }
+    }
+
+    private void saveFriends(final long userId, final JSONArray friends) {
+        final HttpClient httpClient = new DefaultHttpClient();
+        final HttpPost httpPost = new HttpPost(SERVICE_URL + "/" + userId + "/friends");
+
+        try {
+            StringEntity stringEntity = new StringEntity(friends.toString());
+            stringEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            httpPost.setEntity(stringEntity);
+            httpClient.execute(httpPost);
+        } catch (Exception e) {
+            Log.e("UserDao", "Failed to save friends");
+        }
 
     }
 

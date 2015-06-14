@@ -8,6 +8,7 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -16,10 +17,13 @@ import com.facebook.FacebookSdk;
 import java.util.List;
 import java.util.ListIterator;
 
+import hackathon.app.CurrentUserHolder;
 import hackathon.app.MainActivity;
 import hackathon.app.R;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
+import hackathon.app.dao.Rating;
+import hackathon.app.dao.RatingDao;
 
 public class EventActivity extends Activity {
 
@@ -48,6 +52,38 @@ public class EventActivity extends Activity {
         fetchEvent(_eventId);
 
         setContentView(R.layout.activity_event);
+
+        final RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, final float rating, boolean fromUser) {
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        new RatingDao(getApplicationContext()).createRating(_eventId, (int) rating);
+                        return null;
+                    }
+                }.execute();
+            }
+        });
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                final List<Rating> ratings = new RatingDao(getApplicationContext()).getRatings();
+                final long userId = new CurrentUserHolder(getApplicationContext()).getCurrentUserId();
+
+                for (final Rating rating : ratings) {
+                    if (rating.getEventId() == _eventId && rating.getUserId() == userId) {
+                        ratingBar.setRating(rating.getValue());
+                        return null;
+                    }
+                }
+
+                return null;
+            }
+        }.execute();
+
     }
 
     @Override

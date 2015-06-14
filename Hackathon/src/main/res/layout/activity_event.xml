@@ -5,7 +5,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="hackathon.app.db.EventActivity" android:id="@+id/" android:weightSum="1">
+    tools:context="hackathon.app.db.EventActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,7 +55,7 @@
     <ScrollView
             android:layout_width="match_parent"
             android:layout_height="104dp"
-            android:id="@+id/scrollView2" android:scrollbars="none" android:layout_weight="0.36">
+            android:id="@+id/scrollView2" android:scrollbars="none" android:layout_weight="0.21">
         <TextView android:text="This event is  a very cool thing. You will have an opportunity to fulfill all of your dreams here. Come along!" android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/eventDescription"
@@ -68,7 +68,13 @@
         android:layout_height="wrap_content"
         android:text="I&apos;m attending"
         android:id="@+id/attendingButton"
-        android:layout_gravity="right" />
+            />
+    <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:numStars="5"
+            android:stepSize="1.0"/>
 
 
 </LinearLayout>

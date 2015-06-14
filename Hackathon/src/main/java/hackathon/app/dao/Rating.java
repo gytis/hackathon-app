@@ -10,6 +10,17 @@ public class Rating {
     private long eventId;
     private int value;
 
+    public Rating() {
+
+    }
+
+    public Rating(long id, long userId, long eventId, int value) {
+        this.id = id;
+        this.userId = userId;
+        this.eventId = eventId;
+        this.value = value;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.login.widget.LoginButton;
@@ -82,6 +83,11 @@ public class EventActivity extends Activity {
                 populateEventData(event);
             }
         }.execute();
+    }
+
+    public void confirmAttendance(View btn) {
+        int id = 1; //dummy user ID
+        
     }
 
     private void populateEventData(Event event) {

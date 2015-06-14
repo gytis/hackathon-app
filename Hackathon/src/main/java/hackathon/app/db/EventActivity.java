@@ -1,15 +1,25 @@
 package hackathon.app.db;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.facebook.login.widget.LoginButton;
+
+import java.util.List;
+import java.util.ListIterator;
 
 import hackathon.app.R;
+import hackathon.app.dao.Event;
+import hackathon.app.dao.EventDao;
 
 public class EventActivity extends Activity {
 
-    private int _eventId;
+    private long _eventId;
     /*
     Create a bundle for an intent
 
@@ -24,7 +34,9 @@ public class EventActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle b = getIntent().getExtras();
-        _eventId = b.getInt("eventId");
+        _eventId = b.getLong("eventId");
+        fetchEvent(_eventId);
+
         setContentView(R.layout.activity_event);
     }
 
@@ -48,5 +60,36 @@ public class EventActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void fetchEvent(final long id) {
+        new AsyncTask<Void, Void, List<Event>>() {
+            @Override
+            protected List<Event> doInBackground(Void... voids) {
+                return new EventDao().getEvents();
+            }
+
+            @Override
+            protected void onPostExecute(List<Event> events) {
+                ListIterator<Event> iter = events.listIterator();
+                Event event = null;
+                while(iter.hasNext()) {
+                    event = iter.next();
+                    if (event.getId() == id) {
+                        break;
+                    }
+                }
+                populateEventData(event);
+            }
+        }.execute();
+    }
+
+    private void populateEventData(Event event) {
+        final TextView eventDescription = (TextView) findViewById(R.id.eventDescription);
+        eventDescription.setText(Html.fromHtml(event.getDescription()));
+
+        final TextView eventLocation = (TextView) findViewById(R.id.eventLocation);
+        eventLocation.setText(event.getStreet() + ", " + event.getTown() + ", " + event.getPostcode());
+
     }
 }

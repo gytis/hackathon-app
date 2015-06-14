@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -18,6 +21,7 @@ import com.facebook.login.widget.LoginButton;
 import hackathon.app.dao.FacebookDao;
 import hackathon.app.dao.User;
 import hackathon.app.dao.UserDao;
+import hackathon.app.db.EventActivity;
 import hackathon.app.event.EventsActivity;
 import org.json.JSONObject;
 
@@ -122,4 +126,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void testEvent(View caller) {
+        Intent eventView = new Intent(this, EventActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("eventId", 1); //Your id
+        eventView.putExtras(b); //Put your id to your next Intent
+        startActivity(eventView);
+        finish();
+    }
 }

@@ -2,14 +2,18 @@ package hackathon.app.event;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import com.facebook.FacebookSdk;
 import hackathon.app.R;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
+import hackathon.app.db.EventActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.List;
 public class EventsActivity extends ListActivity {
 
     private final ArrayList<String> listViewData = new ArrayList<String>();
+    private final ArrayList<Long> listIds = new ArrayList<Long>();
     private EventListAdapter eventListAdapter;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -45,10 +50,21 @@ public class EventsActivity extends ListActivity {
                         break;
                     }
                     count++;
+                    listIds.add(event.getId());
                 }
                 eventListAdapter.addDataToList(eventNames);
             }
         }.execute();
+    }
+
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        Intent eventView = new Intent(this, EventActivity.class);
+        Bundle b = new Bundle();
+        b.putLong("eventId", listIds.get(position)); //Your id
+        eventView.putExtras(b); //Put your id to your next Intent
+            startActivity(eventView);
     }
 
 }

@@ -71,7 +71,7 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
             list = n.getTickets();
 
             for (Ticket t : list) {
-                if (isRecent(t.getCreatedAt().getTime(), 60)) {
+                if (true/*isRecent(t.getCreatedAt().getTime(), 60)*/) {
                     Event event = n.getEvent(t.getId());
                     if (event == null) continue;
 

@@ -1,21 +1,27 @@
 package hackathon.app.db;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
-import com.facebook.login.widget.LoginButton;
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 
 import java.util.List;
 import java.util.ListIterator;
 
+import hackathon.app.MainActivity;
 import hackathon.app.R;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
+import hackathon.app.dao.TicketDao;
 
 public class EventActivity extends Activity {
 
@@ -33,11 +39,30 @@ public class EventActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
         Bundle b = getIntent().getExtras();
         _eventId = b.getLong("eventId");
         fetchEvent(_eventId);
 
         setContentView(R.layout.activity_event);
+
+        findViewById(R.id.attendingButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        Log.v("Kuku", String.valueOf(TicketDao.getTickets().size()));
+                        return null;
+                    }
+                }.execute();
+            }
+        });
     }
 
     @Override
@@ -62,6 +87,16 @@ public class EventActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+    }
+
     private void fetchEvent(final long id) {
         new AsyncTask<Void, Void, List<Event>>() {
             @Override
@@ -82,6 +117,11 @@ public class EventActivity extends Activity {
                 populateEventData(event);
             }
         }.execute();
+    }
+
+    public void confirmAttendance(View btn) {
+        int id = 1; //dummy user ID
+        
     }
 
     private void populateEventData(Event event) {

@@ -2,11 +2,16 @@ package hackathon.app.dao;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,5 +86,37 @@ public class TicketDao {
             }
         }
         return tickets;
+    }
+
+    //TODO
+    public static void addTicket(Ticket ticket) {
+
+        final HttpClient httpClient = new DefaultHttpClient();
+        final HttpPost httpPost = new HttpPost(SERVICE_URL);
+        httpPost.setHeader("Accept", "application/json");
+
+        //Serialize the object to JSON!
+        Gson gson = new Gson();
+        String json = gson.toJson(ticket);
+        try {
+            StringEntity jsonEntity = new StringEntity(json, HTTP.UTF_8);
+            jsonEntity.setContentType("application/json");
+            httpPost.setEntity(jsonEntity);
+        } catch(Exception e) {
+
+        }
+
+        JSONObject jsonObject = null;
+
+        try {
+            final HttpResponse httpResponse = httpClient.execute(httpPost);
+            final HttpEntity entity = httpResponse.getEntity();
+            final String result = EntityUtils.toString(entity);
+
+            jsonObject = new JSONObject(result);
+        } catch (Exception e) {
+            Log.e("TicketDao", "Response failed");
+            Log.e("TicketDao", e.getMessage());
+        }
     }
 }

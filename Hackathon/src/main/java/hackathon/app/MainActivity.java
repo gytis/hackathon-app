@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 
     private TokenTracker tokenTracker;
 
-    private final UserDao userDao = new UserDao();
+    private UserDao userDao;
 
     private final FacebookService facebookService = new FacebookService();
 
@@ -40,6 +40,7 @@ public class MainActivity extends Activity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
+        userDao = new UserDao(getApplicationContext());
         eventsActivityIntent = new Intent(this, EventsActivity.class);
         mainActivityIntent = new Intent(this, MainActivity.class);
         callbackManager = CallbackManager.Factory.create();
@@ -108,6 +109,7 @@ public class MainActivity extends Activity {
         protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
             if (currentAccessToken == null) {
                 Log.v("MainActivity", "Access token set to null");
+                new CurrentUserHolder(getApplicationContext()).setCurrentUserId(-1);
                 startActivity(mainActivityIntent);
             } else {
                 Log.v("MainActivity", "Access token set to " + currentAccessToken);

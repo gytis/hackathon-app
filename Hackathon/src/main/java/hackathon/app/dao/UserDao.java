@@ -1,7 +1,9 @@
 package hackathon.app.dao;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import hackathon.app.CurrentUserHolder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,8 +28,10 @@ public final class UserDao {
 
     private static final String SERVICE_URL = "http://hackathonserver-gytis.rhcloud.com/users";
 
-    public UserDao() {
+    private final Context context;
 
+    public UserDao(final Context context) {
+        this.context = context;
     }
 
     public List<User> getUsers() {
@@ -82,7 +86,7 @@ public final class UserDao {
 
         try {
             if (jsonObject != null && jsonObject.getBoolean("registered")) {
-
+                new CurrentUserHolder(context).setCurrentUserId(jsonObject.getLong("id"));
                 return true;
             }
         } catch (JSONException e) {
@@ -115,7 +119,8 @@ public final class UserDao {
 
                     httpPost.setEntity(stringEntity);
                     final HttpResponse httpResponse = httpClient.execute(httpPost);
-                    Log.v("UserDao", httpResponse.getEntity().toString());
+                    final JSONObject responseObject = new JSONObject(httpResponse.getEntity().toString());
+                    new CurrentUserHolder(context).setCurrentUserId(responseObject.getLong("id"));
                 } catch (Exception e) {
                     Log.v("UserDao", e.getMessage());
                 }

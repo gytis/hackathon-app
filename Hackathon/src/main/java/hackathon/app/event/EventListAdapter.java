@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import hackathon.app.R;
 
@@ -31,23 +32,10 @@ public class EventListAdapter extends ArrayAdapter<String>{
 
         View rowView = inflater.inflate(R.layout.activity_events, parent, false);
         TextView textView = (TextView) rowView.findViewById(R.id.label);
-        /*ImageView imageView = (ImageView) rowView.findViewById(R.id.logo);*/
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.logo);
         textView.setText(values.get(position));
 
-        // Change icon based on name
-        String s = values.get(position);
-
-        System.out.println(s);
-
-        /*if (s.equals("WindowsMobile")) {
-            imageView.setImageResource(R.drawable.windowsmobile_logo);
-        } else if (s.equals("iOS")) {
-            imageView.setImageResource(R.drawable.ios_logo);
-        } else if (s.equals("Blackberry")) {
-            imageView.setImageResource(R.drawable.blackberry_logo);
-        } else {
-            imageView.setImageResource(R.drawable.android_logo);
-        }*/
+        imageView.setImageResource(R.drawable.ball);
 
         return rowView;
     }

@@ -51,6 +51,7 @@ public class TicketNotification {
         this.running = true;
         this.context = applicationContext;
         this.targetActivity = targetActivity;
+        this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public synchronized void stop() {

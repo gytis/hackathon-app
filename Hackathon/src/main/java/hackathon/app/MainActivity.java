@@ -14,6 +14,8 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
+import hackathon.app.dao.Rating;
+import hackathon.app.dao.RatingDao;
 import hackathon.app.dao.Ticket;
 import hackathon.app.dao.TicketDao;
 import hackathon.app.dao.User;
@@ -26,7 +28,9 @@ import hackathon.app.notifications.TicketNotification;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import hackathon.app.notifications.TicketNotification;
@@ -57,13 +61,36 @@ public class MainActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
         tokenTracker = new TokenTracker();
 
-        //if (AccessToken.getCurrentAccessToken() != null) {
+        if (AccessToken.getCurrentAccessToken() != null) {
             startActivity(eventsActivityIntent);
-        //}
+        }
 
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookLoginCallback());
+
+        final Ticket ticket = new Ticket();
+        ticket.setUserId(new CurrentUserHolder(getApplicationContext()).getCurrentUserId());
+        SimpleDateFormat curFormater = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date dateObj = curFormater.parse("01/01/2017");
+            ticket.setDate(dateObj);
+        }
+        catch(Exception e) {
+
+        }
+
+        ticket.setEventId(1);
+
+        final TicketDao ticketDao = new TicketDao();
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ticketDao.addTicket(ticket);
+
+                return null;
+            }
+        }.execute();
 
         try {
             fireNotificationService();

@@ -30,6 +30,4 @@ public class DatePicker extends DialogFragment implements DatePickerDialog.OnDat
 
     }
 
-    public void show(FragmentManager supportFragmentManager, String s) {
-    }
 }

@@ -1,15 +1,19 @@
 package hackathon.app.db;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import com.facebook.AccessToken;
@@ -18,14 +22,16 @@ import hackathon.app.CurrentUserHolder;
 import hackathon.app.MainActivity;
 import hackathon.app.R;
 import hackathon.app.dao.*;
-import hackathon.app.event.DatePicker;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.ListIterator;
 
 public class EventActivity extends FragmentActivity {
 
     private long _eventId;
+
+    private DatePickerDialog datePickerDialog;
     /*
     Create a bundle for an intent
 
@@ -45,9 +51,26 @@ public class EventActivity extends FragmentActivity {
             startActivity(new Intent(this, MainActivity.class));
         }
 
+        Calendar newCalendar = Calendar.getInstance();
+        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, monthOfYear, dayOfMonth);
+                Long timestamp = calendar.getTime().getTime();
+                Long userId = new CurrentUserHolder(getApplicationContext()).getCurrentUserId();
+            }
+
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
         Bundle b = getIntent().getExtras();
         _eventId = b.getLong("eventId");
         fetchEvent(_eventId);
+
+
 
         setContentView(R.layout.activity_event);
 
@@ -55,7 +78,7 @@ public class EventActivity extends FragmentActivity {
         attendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDatePickerDialog(v);
+                datePickerDialog.show();
             }
         });
 
@@ -91,24 +114,6 @@ public class EventActivity extends FragmentActivity {
             }
         }.execute();
 
-
-        findViewById(R.id.attendingButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        Log.v("Kuku", String.valueOf(TicketDao.getTickets().size()));
-                        return null;
-                    }
-                }.execute();
-            }
-        });
-    }
-
-    public void showDatePickerDialog(View v) {
-        DatePicker newFragment = new DatePicker();
-        newFragment.show(getSupportFragmentManager(), "Date Picker");
     }
 
     @Override

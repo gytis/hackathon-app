@@ -1,14 +1,12 @@
 package hackathon.app.event;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import com.facebook.FacebookSdk;
-import hackathon.app.R;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
 import hackathon.app.db.EventActivity;

@@ -9,13 +9,16 @@ public class User {
 
     private final String facebookId;
 
+    private final String name;
+
     private final boolean registered;
 
     private final String facebookAvatar;
 
-    public User(final int id, final String facebookId, final boolean registered, final String facebookAvatar) {
+    public User(final int id, final String facebookId, final String name, final boolean registered, final String facebookAvatar) {
         this.id = id;
         this.facebookId = facebookId;
+        this.name = name;
         this.registered = registered;
         this.facebookAvatar = facebookAvatar;
     }
@@ -24,6 +27,9 @@ public class User {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
     public String getFacebookId() {
         return facebookId;
     }
@@ -41,6 +47,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", facebookId='" + facebookId + '\'' +
+                ", name='" + name + '\'' +
                 ", registered=" + registered +
                 ", facebookAvatar='" + facebookAvatar + '\'' +
                 '}';

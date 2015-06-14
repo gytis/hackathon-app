@@ -45,10 +45,13 @@ public class MainActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
         tokenTracker = new TokenTracker();
 
+        if (AccessToken.getCurrentAccessToken() != null) {
+            startActivity(eventsActivityIntent);
+        }
+
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookLoginCallback());
-        startActivity(eventsActivityIntent);
     }
 
     @Override

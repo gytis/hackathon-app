@@ -1,6 +1,7 @@
 package hackathon.app.db;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -9,11 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.facebook.login.widget.LoginButton;
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 
 import java.util.List;
 import java.util.ListIterator;
 
+import hackathon.app.MainActivity;
 import hackathon.app.R;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
@@ -34,6 +37,12 @@ public class EventActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
         Bundle b = getIntent().getExtras();
         _eventId = b.getLong("eventId");
         fetchEvent(_eventId);
@@ -61,6 +70,16 @@ public class EventActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
     }
 
     private void fetchEvent(final long id) {

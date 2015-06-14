@@ -6,7 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import hackathon.app.MainActivity;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
 import hackathon.app.db.EventActivity;
@@ -26,6 +28,11 @@ public class EventsActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+
         this.eventListAdapter = new EventListAdapter(this, listViewData);
         setListAdapter(this.eventListAdapter);
         final EventDao eventDao = new EventDao();

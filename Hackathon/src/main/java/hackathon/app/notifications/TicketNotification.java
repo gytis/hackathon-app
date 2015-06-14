@@ -18,12 +18,16 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import hackathon.app.CurrentUserHolder;
 import hackathon.app.dao.Event;
+import hackathon.app.dao.EventDao;
 import hackathon.app.dao.Ticket;
+import hackathon.app.dao.TicketDao;
 import hackathon.app.dao.User;
+import hackathon.app.dao.UserDao;
 
 
-public class TicketNotification extends AsyncTask<NotificationServiceListener, Void, Void> {
+public class TicketNotification {
 
     private List<Notification> notifications = new ArrayList<Notification>();
     private Context context;
@@ -31,6 +35,8 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
     private NotificationManager notificationManager;
     private volatile boolean running = false;
     private static TicketNotification instance = new TicketNotification();
+    private UserDao userDao;
+    public static String message = "Your friend %s is going to %s on %s at %s!";
 
     private TicketNotification() {
         super();
@@ -40,18 +46,18 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
         return instance;
     }
 
-    public synchronized void start(Context applicationContext, Class targetActivity, NotificationServiceListener notificationServiceListener) {
+    public void start(Context applicationContext, Class targetActivity, UserDao userDao) {
+        this.userDao = userDao;
+        this.running = true;
         this.context = applicationContext;
         this.targetActivity = targetActivity;
-        execute(notificationServiceListener);
     }
 
     public synchronized void stop() {
         running = false;
-        cancel(true);
     }
 
-    @Override
+    /*@Override
     protected void onPreExecute() {
         running = true;
         final String nContext = Context.NOTIFICATION_SERVICE;
@@ -63,19 +69,46 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
         final NotificationServiceListener n = args[0];
         run(n);
         return null;
+    }*/
+
+    public List<Ticket> getTickets() {
+        return TicketDao.getTickets();
     }
 
-    private void run(NotificationServiceListener n) {
+    public User getUser(long id) {
+        final Long userId = new CurrentUserHolder(context).getCurrentUserId();
+        for (final User user : userDao.getUsers()) {
+            if (user.getId() == userId) {
+                return user;
+            }
+        }
+
+        return null;
+    }
+
+    public Event getEvent(long id) {
+        final EventDao eventDao = new EventDao();
+
+        for (final Event event : eventDao.getEvents()) {
+            if (event.getId() == id) {
+                return event;
+            }
+        }
+
+        return null;
+    }
+
+    public void run() {
         List<Ticket> list;
         while (running) {
-            list = n.getTickets();
+            list = getTickets();
 
             for (Ticket t : list) {
                 if (true/*isRecent(t.getCreatedAt().getTime(), 60)*/) {
-                    Event event = n.getEvent(t.getId());
+                    Event event = getEvent(t.getId());
                     if (event == null) continue;
 
-                    User user = n.getUser(t.getId());
+                    User user = getUser(t.getId());
                     if (user == null) continue;
 
                     DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
@@ -87,7 +120,9 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
                     fireNotification(message, event.getId());
                 }
             }
-            delay(3 * 1000);
+            try {
+                Thread.sleep(10000);
+            } catch(InterruptedException e) {}
         }
     }
 

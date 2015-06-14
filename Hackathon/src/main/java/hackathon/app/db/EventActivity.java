@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
 import hackathon.app.dao.Rating;
 import hackathon.app.dao.RatingDao;
+import hackathon.app.dao.TicketDao;
 
 public class EventActivity extends Activity {
 
@@ -84,6 +86,19 @@ public class EventActivity extends Activity {
             }
         }.execute();
 
+
+        findViewById(R.id.attendingButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        Log.v("Kuku", String.valueOf(TicketDao.getTickets().size()));
+                        return null;
+                    }
+                }.execute();
+            }
+        });
     }
 
     @Override

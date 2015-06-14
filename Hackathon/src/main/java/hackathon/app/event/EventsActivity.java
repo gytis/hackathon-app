@@ -1,13 +1,9 @@
 package hackathon.app.event;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ListView;
 import com.facebook.FacebookSdk;
-import hackathon.app.R;
 import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
 
@@ -39,6 +35,12 @@ public class EventsActivity extends ListActivity {
                 final ArrayList<String> eventNames = new ArrayList<String>();
                 for (Event event: result) {
                     eventNames.add(event.getName());
+                    // Limit hack
+                    int count = 0;
+                    if (count > 50) {
+                        break;
+                    }
+                    count++;
                 }
                 eventListAdapter.addDataToList(eventNames);
             }

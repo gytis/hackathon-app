@@ -1,5 +1,6 @@
 package hackathon.app.dao;
 
+import android.os.AsyncTask;
 import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -76,7 +77,7 @@ public final class UserDao {
             final String result = EntityUtils.toString(entity);
             jsonObject = new JSONObject(result);
         } catch (Exception e) {
-            Log.e("UserDao", "Hello");
+            return false;
         }
 
         try {
@@ -90,31 +91,39 @@ public final class UserDao {
         return false;
     }
 
-    public void registerUser(String facebookId, String name) {
+    public void registerUser(final String facebookId, final String name) {
         // check if user is registered
-        if (isUserRegistered(facebookId)) {
-            return;
-        }
-        final HttpClient httpClient = new DefaultHttpClient();
-        final HttpPost httpPost = new HttpPost(SERVICE_URL);
-        httpPost.setHeader("Accept", "application/json");
 
-        JSONObject jsonPostObject = new JSONObject();
-        try {
-            jsonPostObject.put("name", name);
-            jsonPostObject.put("facebook_id", facebookId);
-            jsonPostObject.put("registered", true);
-            jsonPostObject.put("photo", "https://graph.facebook.com/" + facebookId + "/picture");
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (isUserRegistered(facebookId)) {
+                    return null;
+                }
+                final HttpClient httpClient = new DefaultHttpClient();
+                final HttpPost httpPost = new HttpPost(SERVICE_URL);
 
-            StringEntity stringEntity = new StringEntity(jsonPostObject.toString());
-            stringEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                JSONObject jsonPostObject = new JSONObject();
+                try {
+                    jsonPostObject.put("name", name);
+                    jsonPostObject.put("facebook_id", facebookId);
+                    jsonPostObject.put("registered", true);
+                    jsonPostObject.put("photo", "https://graph.facebook.com/" + facebookId + "/picture");
 
-            httpPost.setEntity(stringEntity);
-            final HttpResponse httpResponse = httpClient.execute(httpPost);
-            Log.v("UserDao", httpResponse.getEntity().toString());
-        } catch (Exception e) {
-            Log.v("UserDao", e.getMessage());
-        }
+                    StringEntity stringEntity = new StringEntity(jsonPostObject.toString());
+                    stringEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+
+                    httpPost.setEntity(stringEntity);
+                    final HttpResponse httpResponse = httpClient.execute(httpPost);
+                    Log.v("UserDao", httpResponse.getEntity().toString());
+                } catch (Exception e) {
+                    Log.v("UserDao", e.getMessage());
+                }
+
+                return null;
+            }
+        }.execute();
+
     }
 
 }

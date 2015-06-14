@@ -1,6 +1,7 @@
 package hackathon.app;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.hardware.usb.UsbRequest;
 import android.os.AsyncTask;
@@ -10,11 +11,17 @@ import android.view.View;
 import com.facebook.*;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import hackathon.app.dao.Event;
+import hackathon.app.dao.EventDao;
+import hackathon.app.dao.Ticket;
+import hackathon.app.dao.TicketDao;
 import hackathon.app.dao.User;
 import hackathon.app.dao.UserDao;
 import hackathon.app.db.EventActivity;
 import hackathon.app.event.EventsActivity;
 import hackathon.app.facebook.FacebookService;
+import hackathon.app.notifications.NotificationServiceListener;
+import hackathon.app.notifications.TicketNotification;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,6 +60,46 @@ public class MainActivity extends Activity {
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookLoginCallback());
+
+        try {
+            //fireNotificationService();
+        } catch (Exception e) {
+            //Log.v("NOTIFICATION EXCEPTION: ", e.getMessage());
+        }
+    }
+
+    private void fireNotificationService() {
+        TicketNotification.service().start(getApplicationContext(), EventActivity.class, new NotificationServiceListener() {
+            @Override
+            public List<Ticket> getTickets() {
+                return TicketDao.getTickets();
+            }
+
+            @Override
+            public User getUser(long id) {
+                final Long userId = new CurrentUserHolder(getApplicationContext()).getCurrentUserId();
+                for (final User user : userDao.getUsers()) {
+                    if (user.getId() == userId) {
+                        return user;
+                    }
+                }
+
+                return null;
+            }
+
+            @Override
+            public Event getEvent(long id) {
+                final EventDao eventDao = new EventDao();
+
+                for (final Event event : eventDao.getEvents()) {
+                    if (event.getId() == id) {
+                        return event;
+                    }
+                }
+
+                return null;
+            }
+        });
     }
 
     @Override

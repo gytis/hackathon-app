@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class TicketDao {
 
-    private static final String SERVICE_URL = "http://hackathonserver-gytis.rhcloud.com";
+    private static final String SERVICE_URL = "http://hackathonserver-gytis.rhcloud.com/tickets";
 
     public static List<Ticket> getTickets() {
 
@@ -34,38 +34,22 @@ public class TicketDao {
         final HttpGet httpGet = new HttpGet(SERVICE_URL);
         httpGet.setHeader("Accept", "application/json");
 
-        JSONObject jsonObject = null;
+        JSONArray jsonArray = null;
 
         try {
             final HttpResponse httpResponse = httpClient.execute(httpGet);
             final HttpEntity entity = httpResponse.getEntity();
             final String result = EntityUtils.toString(entity);
 
-            jsonObject = new JSONObject(result);
+            jsonArray = new JSONArray(result);
         } catch (Exception e) {
             Log.e("TicketDao", "Response failed");
-            Log.e("TicketDao", e.getMessage());
-        }
-
-        if (jsonObject == null) {
-            return new ArrayList<Ticket>();
-        }
-
-        JSONArray jsonArray = null;
-
-        // Parse data
-        try {
-            jsonArray = jsonObject.getJSONObject("result").getJSONArray("records");
-        } catch (JSONException e) {
-            Log.e("TicketDao", "Failed Parsing");
             Log.e("TicketDao", e.getMessage());
         }
 
         if (jsonArray == null) {
             return new ArrayList<Ticket>();
         }
-
-        //[{"id":0,"user_id":0,"event_id":0,"date":"12569537329","created_at":"12569537329"},{"id":1,"user_id":1,"event_id":1,"date":"12569537329","created_at":"12569537329"}]
 
         final List<Ticket> tickets = new ArrayList<Ticket>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -75,8 +59,8 @@ public class TicketDao {
                 ticket.setId(ticketJSON.getLong("id"));
                 ticket.setUserId(ticketJSON.getLong("user_id"));
                 ticket.setEventId(ticketJSON.getLong("event_id"));
-                ticket.setDate(new Date(ticketJSON.getLong("date") * 1000));
-                ticket.setCreatedAt(new Date(ticketJSON.getLong("created_at") * 1000));
+                ticket.setDate(new Date(ticketJSON.getLong("date")));
+                ticket.setCreatedAt(new Date(ticketJSON.getLong("created_at")));
 
                 tickets.add(ticket);
 
@@ -89,34 +73,34 @@ public class TicketDao {
     }
 
     //TODO
-    public static void addTicket(Ticket ticket) {
-
-        final HttpClient httpClient = new DefaultHttpClient();
-        final HttpPost httpPost = new HttpPost(SERVICE_URL);
-        httpPost.setHeader("Accept", "application/json");
-
-        //Serialize the object to JSON!
-        Gson gson = new Gson();
-        String json = gson.toJson(ticket);
-        try {
-            StringEntity jsonEntity = new StringEntity(json, HTTP.UTF_8);
-            jsonEntity.setContentType("application/json");
-            httpPost.setEntity(jsonEntity);
-        } catch(Exception e) {
-
-        }
-
-        JSONObject jsonObject = null;
-
-        try {
-            final HttpResponse httpResponse = httpClient.execute(httpPost);
-            final HttpEntity entity = httpResponse.getEntity();
-            final String result = EntityUtils.toString(entity);
-
-            jsonObject = new JSONObject(result);
-        } catch (Exception e) {
-            Log.e("TicketDao", "Response failed");
-            Log.e("TicketDao", e.getMessage());
-        }
-    }
+//    public static void addTicket(Ticket ticket) {
+//
+//        final HttpClient httpClient = new DefaultHttpClient();
+//        final HttpPost httpPost = new HttpPost(SERVICE_URL);
+//        httpPost.setHeader("Accept", "application/json");
+//
+//        //Serialize the object to JSON!
+//        Gson gson = new Gson();
+//        String json = gson.toJson(ticket);
+//        try {
+//            StringEntity jsonEntity = new StringEntity(json, HTTP.UTF_8);
+//            jsonEntity.setContentType("application/json");
+//            httpPost.setEntity(jsonEntity);
+//        } catch(Exception e) {
+//
+//        }
+//
+//        JSONObject jsonObject = null;
+//
+//        try {
+//            final HttpResponse httpResponse = httpClient.execute(httpPost);
+//            final HttpEntity entity = httpResponse.getEntity();
+//            final String result = EntityUtils.toString(entity);
+//
+//            jsonObject = new JSONObject(result);
+//        } catch (Exception e) {
+//            Log.e("TicketDao", "Response failed");
+//            Log.e("TicketDao", e.getMessage());
+//        }
+//    }
 }

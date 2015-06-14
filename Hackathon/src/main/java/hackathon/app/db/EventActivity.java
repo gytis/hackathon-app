@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -24,8 +27,9 @@ import hackathon.app.dao.Event;
 import hackathon.app.dao.EventDao;
 import hackathon.app.dao.Rating;
 import hackathon.app.dao.RatingDao;
+import hackathon.app.event.DatePicker;
 
-public class EventActivity extends Activity {
+public class EventActivity extends FragmentActivity {
 
     private long _eventId;
     /*
@@ -52,6 +56,15 @@ public class EventActivity extends Activity {
         fetchEvent(_eventId);
 
         setContentView(R.layout.activity_event);
+
+        Button attendButton = (Button) findViewById(R.id.attendingButton);
+        attendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(v);
+            }
+        });
+
 
         final RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -84,6 +97,11 @@ public class EventActivity extends Activity {
             }
         }.execute();
 
+    }
+
+    public void showDatePickerDialog(View v) {
+        DatePicker newFragment = new DatePicker();
+        newFragment.show(getSupportFragmentManager(), "Date Picker");
     }
 
     @Override

@@ -55,8 +55,7 @@
     <TextView android:text="This event is  a very cool thing. You will have an opportunity to fulfill all of your dreams here. Come along!" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/eventDescription"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentLeft="true"/>
 
     <Button
         android:layout_width="wrap_content"

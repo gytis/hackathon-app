@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.hardware.usb.UsbRequest;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,7 @@ import hackathon.app.notifications.TicketNotification;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hackathon.app.notifications.TicketNotification;
@@ -55,53 +57,42 @@ public class MainActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
         tokenTracker = new TokenTracker();
 
-        if (AccessToken.getCurrentAccessToken() != null) {
+        //if (AccessToken.getCurrentAccessToken() != null) {
             startActivity(eventsActivityIntent);
-        }
+        //}
 
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookLoginCallback());
 
         try {
-            //fireNotificationService();
+            fireNotificationService();
+            Log.v("a", "a");
         } catch (Exception e) {
             //Log.v("NOTIFICATION EXCEPTION: ", e.getMessage());
         }
     }
 
     private void fireNotificationService() {
-        TicketNotification.service().start(getApplicationContext(), EventActivity.class, new NotificationServiceListener() {
-            @Override
-            public List<Ticket> getTickets() {
-                return TicketDao.getTickets();
-            }
+        TicketNotification.service().start(getApplicationContext(), EventActivity.class, userDao);
 
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            public User getUser(long id) {
-                final Long userId = new CurrentUserHolder(getApplicationContext()).getCurrentUserId();
-                for (final User user : userDao.getUsers()) {
-                    if (user.getId() == userId) {
-                        return user;
-                    }
-                }
-
+            protected Void doInBackground(Void... params) {
+                TicketNotification.service().run();
                 return null;
             }
 
-            @Override
-            public Event getEvent(long id) {
-                final EventDao eventDao = new EventDao();
-
-                for (final Event event : eventDao.getEvents()) {
-                    if (event.getId() == id) {
-                        return event;
-                    }
-                }
-
-                return null;
+            protected void onPostExecute() {
             }
-        });
+
+            public void startMyTask() {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                    executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                else
+                    execute();
+            }
+        }.startMyTask();
     }
 
     @Override

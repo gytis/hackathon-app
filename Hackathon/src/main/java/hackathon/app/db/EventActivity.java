@@ -42,7 +42,7 @@ public class EventActivity extends Activity {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         if (AccessToken.getCurrentAccessToken() == null) {
-            startActivity(new Intent(this, MainActivity.class));
+            //startActivity(new Intent(this, MainActivity.class));
         }
 
         Bundle b = getIntent().getExtras();
@@ -93,7 +93,7 @@ public class EventActivity extends Activity {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         if (AccessToken.getCurrentAccessToken() == null) {
-            startActivity(new Intent(this, MainActivity.class));
+            //startActivity(new Intent(this, MainActivity.class));
         }
     }
 

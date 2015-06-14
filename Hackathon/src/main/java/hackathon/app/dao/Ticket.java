@@ -14,15 +14,15 @@ public class Ticket {
     private Date date;
     private Date createdAt;
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public void setEventId(int eventId) {
+    public void setEventId(long eventId) {
         this.eventId = eventId;
     }
 

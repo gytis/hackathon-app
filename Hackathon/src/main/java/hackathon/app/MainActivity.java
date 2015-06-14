@@ -23,6 +23,8 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import hackathon.app.notifications.TicketNotification;
+
 public class MainActivity extends Activity {
 
     private CallbackManager callbackManager;

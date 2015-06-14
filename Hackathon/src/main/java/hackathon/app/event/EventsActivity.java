@@ -29,9 +29,9 @@ public class EventsActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        if (AccessToken.getCurrentAccessToken() == null) {
-            startActivity(new Intent(this, MainActivity.class));
-        }
+        //if (AccessToken.getCurrentAccessToken() == null) {
+            //startActivity(new Intent(this, MainActivity.class));
+        //}
 
         this.eventListAdapter = new EventListAdapter(this, listViewData);
         setListAdapter(this.eventListAdapter);

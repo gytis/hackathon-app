@@ -1,33 +1,27 @@
 package hackathon.app.db;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
-
-import java.util.List;
-import java.util.ListIterator;
-
 import hackathon.app.CurrentUserHolder;
 import hackathon.app.MainActivity;
 import hackathon.app.R;
-import hackathon.app.dao.Event;
-import hackathon.app.dao.EventDao;
-import hackathon.app.dao.Rating;
-import hackathon.app.dao.RatingDao;
+import hackathon.app.dao.*;
 import hackathon.app.event.DatePicker;
+
+import java.util.List;
+import java.util.ListIterator;
 
 public class EventActivity extends FragmentActivity {
 
@@ -97,6 +91,19 @@ public class EventActivity extends FragmentActivity {
             }
         }.execute();
 
+
+        findViewById(R.id.attendingButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        Log.v("Kuku", String.valueOf(TicketDao.getTickets().size()));
+                        return null;
+                    }
+                }.execute();
+            }
+        });
     }
 
     public void showDatePickerDialog(View v) {

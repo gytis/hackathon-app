@@ -1,24 +1,35 @@
 package hackathon.app;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.hardware.usb.UsbRequest;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import com.facebook.*;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import hackathon.app.dao.Event;
+import hackathon.app.dao.EventDao;
+import hackathon.app.dao.Ticket;
+import hackathon.app.dao.TicketDao;
 import hackathon.app.dao.User;
 import hackathon.app.dao.UserDao;
 import hackathon.app.db.EventActivity;
 import hackathon.app.event.EventsActivity;
 import hackathon.app.facebook.FacebookService;
+import hackathon.app.notifications.NotificationServiceListener;
+import hackathon.app.notifications.TicketNotification;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import hackathon.app.notifications.TicketNotification;
 
 public class MainActivity extends Activity {
 
@@ -46,13 +57,42 @@ public class MainActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
         tokenTracker = new TokenTracker();
 
-        if (AccessToken.getCurrentAccessToken() != null) {
+        //if (AccessToken.getCurrentAccessToken() != null) {
             startActivity(eventsActivityIntent);
-        }
+        //}
 
         final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookLoginCallback());
+
+        try {
+            fireNotificationService();
+            Log.v("a", "a");
+        } catch (Exception e) {
+            //Log.v("NOTIFICATION EXCEPTION: ", e.getMessage());
+        }
+    }
+
+    private void fireNotificationService() {
+        TicketNotification.service().start(getApplicationContext(), EventActivity.class, userDao);
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                TicketNotification.service().run();
+                return null;
+            }
+
+            protected void onPostExecute() {
+            }
+
+            public void startMyTask() {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                    executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                else
+                    execute();
+            }
+        }.startMyTask();
     }
 
     @Override

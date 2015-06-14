@@ -5,7 +5,7 @@ package hackathon.app.dao;
  */
 public class User {
 
-    private final int id;
+    private final long id;
 
     private final String facebookId;
 
@@ -15,7 +15,7 @@ public class User {
 
     private final String facebookAvatar;
 
-    public User(final int id, final String facebookId, final String name, final boolean registered, final String facebookAvatar) {
+    public User(final long id, final String facebookId, final String name, final boolean registered, final String facebookAvatar) {
         this.id = id;
         this.facebookId = facebookId;
         this.name = name;
@@ -23,7 +23,7 @@ public class User {
         this.facebookAvatar = facebookAvatar;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

@@ -2,14 +2,23 @@ package hackathon.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.usb.UsbRequest;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import com.facebook.*;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import hackathon.app.dao.User;
+import hackathon.app.dao.UserDao;
 import hackathon.app.db.EventActivity;
 import hackathon.app.event.EventsActivity;
+import hackathon.app.facebook.FacebookService;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -20,6 +29,10 @@ public class MainActivity extends Activity {
     private Intent eventsActivityIntent;
 
     private TokenTracker tokenTracker;
+
+    private final UserDao userDao = new UserDao();
+
+    private final FacebookService facebookService = new FacebookService();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,30 +68,20 @@ public class MainActivity extends Activity {
         @Override
         public void onSuccess(LoginResult loginResult) {
             Log.v("Facebook Login", "success");
+            Boolean test;
 
-            /*new FacebookDao().getUserInfo(new GraphRequest.GraphJSONObjectCallback() {
+            facebookService.getUserInfo(new GraphRequest.GraphJSONObjectCallback() {
                 @Override
-                public void onCompleted(final JSONObject jsonObject, final GraphResponse graphResponse) {
-                    new AsyncTask<Void, Void, List<User>>() {
-                        @Override
-                        protected List<User> doInBackground(Void... voids) {
-                            return new UserDao().getUsers();
-                        }
-
-                        @Override
-                        protected void onPostExecute(List<User> users) {
-                            super.onPostExecute(users);
-                            Log.v("MainActivity", jsonObject.toString());
-//                            for (final User : users) {
-//                                if ()
-//                            }
-                        }
-                    }.execute();
+                public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+                    try {
+                        //checks if user is registered (inside the method)
+                        Log.v("MainActivity", jsonObject.toString());
+                        userDao.registerUser(jsonObject.getString("id"), jsonObject.getString("name"));
+                    } catch (JSONException e) {
+                        Log.v("MainActivity", e.getMessage());
+                    }
                 }
-            });*/
-
-
-            /*startActivity(eventsActivityIntent);*/
+            });
 
             // TODO check if registered
             // TODO register

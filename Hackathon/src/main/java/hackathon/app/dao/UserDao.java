@@ -5,7 +5,11 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +24,10 @@ import java.util.List;
 public final class UserDao {
 
     private static final String SERVICE_URL = "http://hackathonserver-gytis.rhcloud.com/users";
+
+    public UserDao() {
+
+    }
 
     public List<User> getUsers() {
         final HttpClient httpClient = new DefaultHttpClient();
@@ -55,14 +63,58 @@ public final class UserDao {
         return users;
     }
 
-    public User getUserByFacebookId(String facebookId) {
+    private boolean isUserRegistered(String facebookId) {
         final HttpClient httpClient = new DefaultHttpClient();
-        final HttpGet httpGet = new HttpGet();
+        final HttpGet httpGet = new HttpGet(SERVICE_URL + "/fb/" + facebookId);
         httpGet.setHeader("Accept", "application/json");
 
-        //TODO finish
+        JSONObject jsonObject = null;
 
-        return null;
+        try {
+            final HttpResponse httpResponse = httpClient.execute(httpGet);
+            final HttpEntity entity = httpResponse.getEntity();
+            final String result = EntityUtils.toString(entity);
+            jsonObject = new JSONObject(result);
+        } catch (Exception e) {
+            Log.e("UserDao", "Hello");
+        }
 
+        try {
+            if (jsonObject != null && jsonObject.getBoolean("registered")) {
+
+                return true;
+            }
+        } catch (JSONException e) {
+            Log.e("UserDao", e.getMessage());
+        }
+        return false;
     }
+
+    public void registerUser(String facebookId, String name) {
+        // check if user is registered
+        if (isUserRegistered(facebookId)) {
+            return;
+        }
+        final HttpClient httpClient = new DefaultHttpClient();
+        final HttpPost httpPost = new HttpPost(SERVICE_URL);
+        httpPost.setHeader("Accept", "application/json");
+
+        JSONObject jsonPostObject = new JSONObject();
+        try {
+            jsonPostObject.put("name", name);
+            jsonPostObject.put("facebook_id", facebookId);
+            jsonPostObject.put("registered", true);
+            jsonPostObject.put("photo", "https://graph.facebook.com/" + facebookId + "/picture");
+
+            StringEntity stringEntity = new StringEntity(jsonPostObject.toString());
+            stringEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+
+            httpPost.setEntity(stringEntity);
+            final HttpResponse httpResponse = httpClient.execute(httpPost);
+            Log.v("UserDao", httpResponse.getEntity().toString());
+        } catch (Exception e) {
+            Log.v("UserDao", e.getMessage());
+        }
+    }
+
 }

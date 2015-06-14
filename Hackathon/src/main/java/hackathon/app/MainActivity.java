@@ -2,26 +2,14 @@ package hackathon.app;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
+import android.view.View;
+import com.facebook.*;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import hackathon.app.dao.FacebookDao;
-import hackathon.app.dao.User;
-import hackathon.app.dao.UserDao;
+import hackathon.app.db.EventActivity;
 import hackathon.app.event.EventsActivity;
-import org.json.JSONObject;
-
-import java.util.List;
 
 import hackathon.app.notifications.TicketNotification;
 
@@ -70,7 +58,7 @@ public class MainActivity extends Activity {
         public void onSuccess(LoginResult loginResult) {
             Log.v("Facebook Login", "success");
 
-            new FacebookDao().getUserInfo(new GraphRequest.GraphJSONObjectCallback() {
+            /*new FacebookDao().getUserInfo(new GraphRequest.GraphJSONObjectCallback() {
                 @Override
                 public void onCompleted(final JSONObject jsonObject, final GraphResponse graphResponse) {
                     new AsyncTask<Void, Void, List<User>>() {
@@ -89,10 +77,10 @@ public class MainActivity extends Activity {
                         }
                     }.execute();
                 }
-            });
+            });*/
 
 
-            startActivity(eventsActivityIntent);
+            /*startActivity(eventsActivityIntent);*/
 
             // TODO check if registered
             // TODO register
@@ -124,4 +112,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void testEvent(View caller) {
+        Intent eventView = new Intent(this, EventActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("eventId", 1); //Your id
+        eventView.putExtras(b); //Put your id to your next Intent
+        startActivity(eventView);
+        finish();
+    }
 }

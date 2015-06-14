@@ -1,13 +1,13 @@
-package hackathon.app.dao;
+package hackathon.app.facebook;
 
 import android.os.Bundle;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 
 /**
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * Created by don on 6/14/15.
  */
-public class FacebookDao {
+public class FacebookService {
 
     public void getUserInfo(GraphRequest.GraphJSONObjectCallback callback) {
         final AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -18,9 +18,10 @@ public class FacebookDao {
 
         GraphRequest request = GraphRequest.newMeRequest(accessToken, callback);
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,link");
+        parameters.putString("fields", "id,name");
         request.setParameters(parameters);
         request.executeAsync();
     }
+
 
 }

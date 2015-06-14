@@ -19,7 +19,7 @@ import java.util.List;
  */
 public final class UserDao {
 
-    private static final String SERVICE_URL = "http://socialncl-nclhackathon.rhcloud.com/users";
+    private static final String SERVICE_URL = "http://hackathonserver-gytis.rhcloud.com/users";
 
     public List<User> getUsers() {
         final HttpClient httpClient = new DefaultHttpClient();
@@ -46,13 +46,23 @@ public final class UserDao {
         for (int i = 0; i < array.length(); i++) {
             try {
                 final JSONObject object = array.getJSONObject(i);
-                users.add(new User(object.getInt("id"), object.getString("facebook_id"), object.getBoolean("registered"),
-                        object.getString("facebook_avatar")));
+                users.add(new User(object.getInt("id"), object.getString("facebook_id"), object.getString("name"), object.getBoolean("registered"),
+                        object.getString("photo")));
             } catch (JSONException e) {
                 Log.e("UserDao", e.getMessage());
             }
         }
-
         return users;
+    }
+
+    public User getUserByFacebookId(String facebookId) {
+        final HttpClient httpClient = new DefaultHttpClient();
+        final HttpGet httpGet = new HttpGet();
+        httpGet.setHeader("Accept", "application/json");
+
+        //TODO finish
+
+        return null;
+
     }
 }

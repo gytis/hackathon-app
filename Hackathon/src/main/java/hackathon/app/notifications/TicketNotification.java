@@ -9,6 +9,8 @@ import android.content.Context;
 import android.app.Notification;
 import android.app.NotificationManager;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +27,7 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
 
     private List<Notification> notifications = new ArrayList<Notification>();
     private Context context;
-    private Class targetContext;
+    private Class targetActivity;
     private NotificationManager notificationManager;
     private volatile boolean running = false;
     private static TicketNotification instance = new TicketNotification();
@@ -38,9 +40,9 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
         return instance;
     }
 
-    public synchronized void start(Context applicationContext, Class targetContext, NotificationServiceListener notificationServiceListener) {
+    public synchronized void start(Context applicationContext, Class targetActivity, NotificationServiceListener notificationServiceListener) {
         this.context = applicationContext;
-        this.targetContext = targetContext;
+        this.targetActivity = targetActivity;
         execute(notificationServiceListener);
     }
 
@@ -51,6 +53,7 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
 
     @Override
     protected void onPreExecute() {
+        running = true;
         final String nContext = Context.NOTIFICATION_SERVICE;
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
@@ -70,11 +73,18 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
             for (Ticket t : list) {
                 if (isRecent(t.getCreatedAt().getTime(), 60)) {
                     Event event = n.getEvent(t.getId());
+                    if (event == null) continue;
+
                     User user = n.getUser(t.getId());
+                    if (user == null) continue;
 
-                    final String message = createMessage("Name", "EventName", "Date", "Date created");
+                    DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+                    String date = df.format(t.getDate());
+                    String dateCreated = df.format(t.getCreatedAt());
 
-                    fireNotification(message);
+                    final String message = createMessage(user.getName(), event.getName(), date, dateCreated);
+
+                    fireNotification(message, event.getId());
                 }
             }
             delay(3 * 1000);
@@ -97,19 +107,18 @@ public class TicketNotification extends AsyncTask<NotificationServiceListener, V
             } catch(InterruptedException e) {}
     }
 
-    private void fireNotification(String message) {
+    private void fireNotification(String message, long eventId) {
         final String notTitle = "New event!";
-        Intent intent = new Intent(context, targetContext);
+        Intent intent = new Intent(context, targetActivity);
 
         Bundle b = new Bundle();
-        b.putString("key", "message");
-
-        intent.putExtra("key", notTitle);
+        b.putLong("eventId", eventId);
+        intent.putExtras(b);
 
         Notification n = new Notification.Builder(context)
                 .setContentTitle(notTitle)
                 .setSmallIcon(android.R.drawable.sym_def_app_icon)
-                .setContentText("Ticket")
+                .setContentText(message)
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getActivity(context, 0, intent, 0)).build();
 

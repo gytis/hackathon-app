@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import com.facebook.*;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import hackathon.app.db.EventActivity;
 import hackathon.app.event.EventsActivity;
 
 public class MainActivity extends Activity {
@@ -108,4 +110,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void testEvent(View caller) {
+        Intent eventView = new Intent(this, EventActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("eventId", 1); //Your id
+        eventView.putExtras(b); //Put your id to your next Intent
+        startActivity(eventView);
+        finish();
+    }
 }

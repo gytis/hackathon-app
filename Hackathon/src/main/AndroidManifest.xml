@@ -17,9 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".event.EventsActivity" android:label="Events">
-
-        </activity>
+        <activity android:name="hackathon.app.event.EventsActivity" android:label="Events"></activity>
+        <activity android:name="hackathon.app.db.EventActivity" android:label="Event"></activity>
         <activity android:name="hackathon.app.RecordsActivity"
                   android:label="Records">
         </activity>
